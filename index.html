@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+ <style>
+ /* Base Styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: top;
+  height: 100vh;
+  margin: 0;
+  padding: 0 10px; /* Small padding for better mobile view */
+  box-sizing: border-box;
+}
+
+.container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  width: 100%;
+  min-width: 320px;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.task-input {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.task-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 16px;
+  width: 100%; /* Make input take full width on small screens */
+}
+
+.task-input button {
+  background-color: #000;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100px;
+  min-width: 80px;
+}
+
+.task-input button:hover {
+  background-color: #0d031b;
+}
+
+/* Task List Styles */
+.task-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.task-list li .task {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.task-list li .task input {
+  margin-right: 10px;
+}
+
+.task-list li.completed .task-text {
+  text-decoration: line-through;
+  color: #bbb;
+}
+
+.task-list li button {
+  background-color: #e57373;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 80px;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.task-list li button:hover {
+  background-color: #d32f2f;
+}
+
+/* Media Queries for Responsiveness */
+
+/* For Tablets and Larger Screens */
+@media (min-width: 600px) {
+  .container {
+    max-width: 600px;
+  }
+}
+
+/* For Desktops and Larger Screens */
+@media (min-width: 768px) {
+  .container {
+    max-width: 700px;
+  }
+
+  .task-input {
+    gap: 15px;
+  }
+
+  .task-list li {
+    padding: 12px 15px;
+  }
+}
+ </style>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <h1>Task Manager</h1>
+
+      <div class="task-input">
+        <input
+          v-model="newTask"
+          @keyup.enter="addTask"
+          type="text"
+          placeholder="Enter a new task">
+        <button @click="addTask">Add Task</button>
+      </div>
+
+      <ul class="task-list">
+        <li v-for="(task, index) in tasks" :key="index" :class="{ completed: task.completed }">
+          <div class="task">
+            <input type="checkbox" v-model="task.completed" @change="saveTasks">
+            <span :class="{ 'task-text': task.completed }">{{ task.text }}</span>
+          </div>
+          <button @click="removeTask(index)">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+  new Vue({
+  el: '#app',
+  data() {
+    return {
+      newTask: '',
+      tasks: JSON.parse(localStorage.getItem('tasks')) || []
+    };
+  },
+  methods: {
+    addTask() {
+      if (this.newTask.trim()) {
+        this.tasks.push({ text: this.newTask.trim(), completed: false });
+        this.newTask = '';
+        this.saveTasks();
+      }
+    },
+    removeTask(index) {
+      this.tasks.splice(index, 1);
+      this.saveTasks();
+    },
+    saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    }
+  }
+});
+
+  </script>
+</body>
+</html>
